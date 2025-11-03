@@ -1,0 +1,7 @@
+com\example\assistant\CommandHandler.class
+com\example\assistant\JsonUtils.class
+com\example\assistant\VoiceAssistant.class
+com\example\assistant\Main.class
+com\example\assistant\Utils.class
+com\example\assistant\FreeTTSSpeaker.class
+com\example\assistant\ResponseSpeaker.class
