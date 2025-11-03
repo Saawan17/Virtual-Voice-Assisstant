@@ -1,88 +1,3 @@
-//package com.example.assistant;
-//
-//import java.awt.Desktop;
-//import java.net.URI;
-//import java.util.Locale;
-//
-//public class CommandHandler {
-//    private final ResponseSpeaker speaker;
-//
-//    public CommandHandler(ResponseSpeaker speaker) {
-//        this.speaker = speaker;
-//    }
-//
-//    public void handle(String text) {
-//        if (text == null) return;
-//        String t = text.toLowerCase(Locale.ROOT).trim();
-//        System.out.println("Recognized: '" + t + "'");
-//
-//        if (t.contains("time")) {
-//            String time = Utils.timeNow();
-//            speaker.speak("The time is " + time);
-//            return;
-//        }
-//
-//        if (t.startsWith("open")) {
-//            String after = t.replaceFirst("open", "").trim();
-//            if (after.startsWith("http")) {
-//                openUrl(after);
-//                speaker.speak("Opening the link");
-//            } else if (after.length() > 0) {
-//                String url = "https://www.google.com/search?q=" + after.replace(" ", "+");
-//                openUrl(url);
-//                speaker.speak("Searching for " + after);
-//            } else {
-//                speaker.speak("What would you like me to open?");
-//            }
-//            return;
-//        }
-//
-//        if (t.matches(".*+ (plus|minus|times|multiplied by|divided by) .*")) {
-//            try {
-//                String cleaned = t.replaceAll("what is|calculate|please|answer|compute", "").trim();
-//                cleaned = cleaned.replaceAll("multiplied by", "times");
-//                String[] parts = cleaned.split(" ");
-//                double a = Double.parseDouble(parts[0]);
-//                String op = parts[1];
-//                double b = Double.parseDouble(parts[2]);
-//                double res = 0;
-//                switch (op) {
-//                    case "plus": res = a + b; break;
-//                    case "minus": res = a - b; break;
-//                    case "times": res = a * b; break;
-//                    case "divided": res = a / b; break;
-//                    default: speaker.speak("I couldn't parse the operation."); return;
-//                }
-//                speaker.speak("The answer is " + res);
-//            } catch (Exception ex) {
-//                speaker.speak("Sorry, I couldn't calculate that.");
-//            }
-//            return;
-//        }
-//
-//        if (t.contains("hello") || t.contains("hi")) {
-//            speaker.speak("Hello! How can I help you?");
-//            return;
-//        }
-//
-//        if (t.contains("exit") || t.contains("quit") || t.contains("stop listening")) {
-//            speaker.speak("Goodbye!");
-//            System.exit(0);
-//        }
-//
-//        speaker.speak("I heard: " + text + ". I'm still learning to perform that action.");
-//    }
-//
-//    private void openUrl(String url) {
-//        try {
-//            if (!url.startsWith("http")) url = "https://" + url;
-//            if (Desktop.isDesktopSupported()) Desktop.getDesktop().browse(new URI(url));
-//        } catch (Exception e) {
-//            speaker.speak("Unable to open the URL.");
-//        }
-//    }
-//}
-
 package com.example.assistant;
 
 import java.time.LocalTime;
@@ -99,7 +14,21 @@ public class CommandHandler {
         command = command.toLowerCase().trim();
         String response;
 
-        if (command.contains("hello") || command.contains("hi")) {
+          if (command.contains("weather")) {
+            String city = "your city"; // default
+            String[] words = command.split(" ");
+            for (int i = 0; i < words.length; i++) {
+                if (words[i].equalsIgnoreCase("in") && i + 1 < words.length) {
+                    city = words[i + 1];
+                    break;
+                }
+            }
+
+            String weatherInfo = WeatherService.getWeather(city);
+            response = weatherInfo;
+        }
+
+        else if (command.contains("hello") || command.contains("hi")) {
             response = "Hello there! How can I help you?";
         }
         else if (command.contains("time")) {
@@ -122,6 +51,8 @@ public class CommandHandler {
             System.exit(0);
             return;
         }
+
+
         else {
             response = "I heard: " + command + ". I'm still learning to perform that action.";
         }
@@ -129,4 +60,15 @@ public class CommandHandler {
         System.out.println("Assistant says: " + response);
         speaker.speak(response);
     }
+
+    private static boolean running = false;
+
+    public void start(String modelPath) throws Exception {
+        if (running) {
+            System.out.println("VoiceAssistant already running. Ignoring duplicate start.");
+            return;
+        }
+        running = true;
+    }
+
 }
