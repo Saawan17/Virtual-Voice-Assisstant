@@ -11,8 +11,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class VoiceAssistant {
 
-    private final CommandHandler handler;
-    private final FreeTTSSpeaker speaker;
+    public VoiceAssistant(){
+
+    }
+
+    private  CommandHandler handler;
+    private  FreeTTSSpeaker speaker;
 
     // 👇 Prevent multiple concurrent starts
     private static boolean running = false;

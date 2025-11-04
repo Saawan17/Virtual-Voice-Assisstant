@@ -23,3 +23,18 @@ public class Main {
         }
     }
 }
+
+//package com.example.assistant;
+//
+//public class Main {
+//    public static void main(String[] args) {
+//        try {
+//            VoiceAssistant assistant = new VoiceAssistant();
+//            WakeWordListener listener = new WakeWordListener(assistant);
+//            listener.startListening();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+//}
+

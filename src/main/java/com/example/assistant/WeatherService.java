@@ -1,44 +1,47 @@
 package com.example.assistant;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStreamReader;
 import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import org.json.JSONObject;
+
 public class WeatherService {
 
-    private static final String API_KEY = "418da941cc068230fc209e28655578af"; // replace with your key
+    private static final String API_KEY = "418da941cc068230fc209e28655578af"; // 🔑 Replace this
+    private static final String BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
 
     public static String getWeather(String city) {
         try {
-            String endpoint = String.format(
-                    "https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s&units=metric",
-                    city, API_KEY
-            );
+            String urlString = BASE_URL + "?q=" + city + "&appid=" + API_KEY + "&units=metric";
+            URL url = new URL(urlString);
 
-            HttpURLConnection conn = (HttpURLConnection) new URL(endpoint).openConnection();
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder response = new StringBuilder();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder result = new StringBuilder();
             String line;
-            while ((line = in.readLine()) != null) response.append(line);
-            in.close();
+            while ((line = reader.readLine()) != null) {
+                result.append(line);
+            }
+            reader.close();
 
-            // Parse JSON
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode json = mapper.readTree(response.toString());
-            String weather = json.get("weather").get(0).get("description").asText();
-            double temp = json.get("main").get("temp").asDouble();
+            JSONObject json = new JSONObject(result.toString());
 
-            return String.format("The weather in %s is %s with temperature %.1f degrees Celsius.",
-                    city, weather, temp);
+            if (json.has("main")) {
+                double temp = json.getJSONObject("main").getDouble("temp");
+                String weather = json.getJSONArray("weather").getJSONObject(0).getString("description");
+                String cityName = json.getString("name");
+                return String.format("Currently in %s, it is %.1f degrees Celsius with %s.", cityName, temp, weather);
+            } else {
+                return "Sorry, I couldn’t find weather data for " + city + ".";
+            }
 
         } catch (Exception e) {
-            return "Sorry, I couldn’t fetch the weather for " + city + ".";
+            e.printStackTrace();
+            return "Failed to fetch weather for " + city + ".";
         }
     }
 }

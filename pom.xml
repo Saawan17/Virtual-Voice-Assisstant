@@ -41,15 +41,26 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.14.2</version>
         </dependency>
+
+        <dependency>
+            <groupId>ai.picovoice</groupId>
+            <artifactId>porcupine-java</artifactId>
+            <version>3.0.5</version>  <!-- or the latest version found -->
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20240303</version>
+        </dependency>
+
     </dependencies>
-
-
 
 
     <build>
         <!-- ✅ Rename final jar -->
         <finalName>voice-assistant</finalName>
-
 
 
         <plugins>
